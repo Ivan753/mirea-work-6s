@@ -86,7 +86,6 @@ class NN:
             a += (self.c[i]-self.x[i])**2
         self.y = self.f(math.sqrt(a))
 
-        # return 1 if self.y > 0.5 else 0
         return self.y
 
     def train(self, x_train, y_train, n, eps):
@@ -133,23 +132,17 @@ class NN:
 
 
 
-print("--- Start ---")
+print("--- Train start ---")
 n = NN()
 n.train(x_train, y_train, 0.005, 0.15)
 
 print("--- Train finish ---")
-print(n.predict([1, 0.5, 0.5]))
-print(n.predict([1, 0.1, 0.3]))
-print(n.predict([1, -0.8, 0.1]))
-print(n.predict([1, 0.25, 0.27]))
-print(n.predict([1, 0.5, 0.2]))
-print(n.predict([1, -0.2, 0.5]))
-print(n.predict([1, 1, 1]))
-print(n.predict([1, 0, 0]))
 
-print(n.c)
-print(n.s)
+print("C: ", n.c)
+print("S: ", n.s)
 
+
+# Draw result
 
 x_s = []
 y_s = []
