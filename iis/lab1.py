@@ -1,6 +1,11 @@
 import random
 import math
 import matplotlib.pyplot as plt
+from matplotlib import cm
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib.ticker import LinearLocator, FormatStrFormatter
+import matplotlib.pyplot as plt
+import numpy as np
 
 x_train = [
     # синяя выборка
@@ -74,7 +79,7 @@ class NN:
         self.y = None
         self.w = [random.random(), random.random(), random.random()]
         self.s = 0.1
-        self.c = [0.1, 0.1, 0.1]
+        self.c = [5, 10, -50]
 
     def predict(self, x):
         self.x = x
@@ -83,7 +88,8 @@ class NN:
             a = math.fabs(self.c[i]-self.x[i])
             self.y += self.w[i]*self.f(a)
 
-        return 1 if self.y > 0.5 else 0
+        # return 1 if self.y > 0.5 else 0
+        return self.y
 
     def train(self, x_train, y_train, n, eps):
         for epoch in range(1000000000000000):
@@ -121,7 +127,7 @@ class NN:
 
 print("--- Start ---")
 n = NN()
-n.train(x_train, y_train, 0.005, 0.1)
+n.train(x_train, y_train, 0.005, 0.15)
 
 print("--- Train finish ---")
 print(n.predict([1, 0.5, 0.5]))
@@ -134,24 +140,33 @@ print(n.predict([1, 1, 1]))
 print(n.predict([1, 0, 0]))
 
 print(n.w)
+print(n.c)
+
 
 x_s = []
 y_s = []
+z_s = []
 
 for i in range(100):
     for j in range(100):
-        prev = 1
         y = n.predict([1, 0.01*i, 0.01*j])
-        if y != prev:
-            x_s.append(0.01*i)
-            y_s.append(0.01*j)
-            prev = y
 
-fig, (ax1) = plt.subplots(
-    nrows=1, ncols=1,
-    figsize=(8, 8)
-)
+        x_s.append(0.01*i)
+        y_s.append(0.01*j)
+        z_s.append(y)
 
-ax1.scatter(x=x_s, y=y_s, marker='o', c='#ee7b56', edgecolor='#eeeeee')
 
+fig = plt.figure()
+ax = fig.gca(projection='3d')
+
+# Plot the surface
+surf = ax.plot_trisurf(np.array(x_s), np.array(y_s), np.array(z_s), cmap=cm.coolwarm, linewidth=0, antialiased=False)
+
+# Customize the z axis
+ax.set_zlim(0, 1)
+ax.zaxis.set_major_locator(LinearLocator(10))
+ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
+
+# Add a color bar which maps values to colors
+fig.colorbar(surf, shrink=0.5, aspect=5)
 plt.show()
