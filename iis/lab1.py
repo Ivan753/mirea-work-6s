@@ -1,11 +1,10 @@
-import random
 import math
+import numpy as np
 import matplotlib.pyplot as plt
+
 from matplotlib import cm
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
-import matplotlib.pyplot as plt
-import numpy as np
 
 x_train = [
     # синяя выборка
@@ -72,21 +71,20 @@ y_train = [
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 ]
 
-
 class NN:
     def __init__(self):
         self.x = []
         self.y = None
-        self.w = [random.random(), random.random(), random.random()]
-        self.s = 0.1
+        self.s = 0.01
         self.c = [5, 10, -50]
 
     def predict(self, x):
         self.x = x
         self.y = 0
+        a = 0
         for i in range(3):
-            a = math.fabs(self.c[i]-self.x[i])
-            self.y += self.w[i]*self.f(a)
+            a += (self.c[i]-self.x[i])**2
+        self.y = self.f(math.sqrt(a))
 
         # return 1 if self.y > 0.5 else 0
         return self.y
@@ -96,20 +94,30 @@ class NN:
             E = 0
             for i in range(len(x_train)):
                 _y = self.predict(x_train[i])
-                _w = [0, 0, 0]
                 _c = [0, 0, 0]
+                _r_s = 0.1
+                r_s = 0.1
 
                 E += (y_train[i] - _y)**2
 
                 for j in range(3):
-                    delta = _y - y_train[i]
-                    a = math.fabs(self.c[j] - x_train[i][j])
-                    _w[j] = self.w[j] - n*delta*self.f(a)
                     _c[j] = self.c[j] + n*(x_train[i][j] - self.c[j])
 
+                    if y_train[i] == 1:
+                        _r_s += (x_train[i][j] - self.c[j])**2
 
-                self.w = _w
                 self.c = _c
+
+                # Величину s рассчитываем как расстояние до наиболее отдаленной от центра точки со значением 1
+                r_s_ = math.sqrt(_r_s) / (100*(y_train[i] - _y)**2 + 1)
+                if y_train[i] == 1 and _y > 0.9:
+                    r_s = r_s_
+
+
+                if r_s > 1:
+                    pass
+                else:
+                    self.s = r_s/2 if r_s/2 > self.s else self.s
 
 
             E = E/len(x_train)
@@ -139,8 +147,8 @@ print(n.predict([1, -0.2, 0.5]))
 print(n.predict([1, 1, 1]))
 print(n.predict([1, 0, 0]))
 
-print(n.w)
 print(n.c)
+print(n.s)
 
 
 x_s = []
