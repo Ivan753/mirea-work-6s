@@ -20,7 +20,7 @@ class Swarm:
     def __init__(self, count, x_min, x_max, y_min, y_max):
         self.step = 0
         self.birds = []
-        self.c1 = 2
+        self.c1 = 1
         self.c2 = 0.1
 
         for _ in range(count):
